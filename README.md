@@ -2,30 +2,6 @@
 
 This is team Frostbyte's project repository for the ENGR101 autonomous vehicle challenge (AVC) 2016.
 
-| Parts  | Cost (Arthur$)  |
-| :------------ |:---------------:| 
-| Analog IR Sensor (medium range) | $25 | 
-| Digital IR Sensor (short range) | $15 |
-| Lever action Whisker push buttons (digital) | $10 |
-| 180◦ servos | $10 |
-| ...      | ... |
-
-Limited number of 3D printed parts 
-
-###Week 1 Checklist
-- [x] Alex:
-- [x] Raven:
-- [x] Jess:
-- [x] Leyton:
-- [ ] Waseem:
-
-####Week 1 Review (24th Apil 2016)
-* Everyone did all their assigned tasks this week. ??????
-* We have set goals for next week ([Week 2 Checklist](#week-2-checklist))
-* placeholder
-* placeholder
-* placeholder
-
 ###AVC Project Timetable
 Overall project plan
 
@@ -36,6 +12,20 @@ Overall project plan
 | 3   | Quadrant 1 complete |  | | [Week 3 Checklist](#week-3-checklist) |
 | ...     | ... | ... | ... | ... |
 | 9   | Submit final reports | Final report due | Exams | |
+
+###Week 1 Checklist
+- [ ] Alex:
+- [ ] Raven:
+- [ ] Jess:
+- [ ] Leyton:
+- [ ] Waseem:
+
+####Week 1 Review (24th April 2016)
+* Everyone did all their assigned tasks this week. ??????
+* We have set goals for next week ([Week 2 Checklist](#week-2-checklist))
+* placeholder
+* placeholder
+* placeholder
 
 ###Weekly Progress Checklist
 - [ ] How has each team member performed against their goal set last week?
