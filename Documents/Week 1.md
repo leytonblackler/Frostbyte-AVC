@@ -1,11 +1,12 @@
-###Week 1 Checklist
+#Week 1
+####Checklist
 - [ ] Alex: (insert task here)
 - [ ] Raven: (insert task here)
 - [ ] Jess: (insert task here)
 - [ ] Leyton: (insert task here)
 - [ ] Waseem: (insert task here)
 
-####Week 1 Review (24th April 2016)
+####Review (24th April 2016)
 * Everyone did all their assigned tasks this week. ??????
 * We have set goals for next week ([Week 2 Checklist](/Documents/Week 2.md)).
 * (insert review here)
