@@ -1,6 +1,13 @@
-# Frostbyte-AVC
+# Frostbyte AVC
 
 This is team Frostbyte's project repository for the ENGR101 autonomous vehicle challenge (AVC) 2016.
+
+###Team Members:
+* Alex Taikato - _(Hardware)_
+* Raven Apiata - _(Software)_
+* Jessica Chiu - _(Software)_
+* Leyton Blackler - _(Software)_
+* Waseem Koya - _(Hardware & Network)_
 
 ###AVC Project Timetable
 
