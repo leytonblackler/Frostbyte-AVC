@@ -13,6 +13,10 @@ int main () {
    int processedCameraOutput[ 320 ];
    //Array used to determine the position of offset of the line detected.
    int offsetPosition[ 320 ];
+   //Array used to find error code.
+   int errorCodeArray[ 320 ];
+   //
+   int errorCode = 0;
 
    //Stores the current dispaly on the camera.
    take_picture();
@@ -44,4 +48,13 @@ int main () {
         printf("Array: %d\n", offsetPosition[i]);
         value++;
    }
+
+   //Finds error code based on arrays.
+   for (int i = 0; i < 320; i++) {
+        errorCodeArray[i] = processedCameraOutput[i] * offsetPosition[i];
+   }
+   //Adds all the values in the errorCode array.
+   for (int i = 0; i < 320; i++) {
+        errorCode = errorCode + errorCodeArray[i];
+    }
 }
