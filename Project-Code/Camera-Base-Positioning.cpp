@@ -1,6 +1,3 @@
-//NOTES:
-//Camera dimensions: 320 width, 240 height
-
 #include <stdio.h>
 #include <time.h>
 
@@ -34,36 +31,40 @@ extern "C" int receive_from_server(char message[24]);
 int main () {
 
    /**INITIAL SETUP*/
-   
+
    init(0);
    // connect camera to the screen
    open_screen_stream();
-   
-   //Array used to store the processed camera output (1 for line detected, 0 for white).
-   int processedCameraOutput[ 320 ];
-   //Array used to determine the position of offset of the line detected.
-   int offsetPosition[ 320 ];
-   //Array used to find error code.
-   int errorCodeArray[ 320 ];
-   //Variable usedto store the error code.
-   int errorCode = 0;
 
+   //Array used to store the processed camera output (1 for line detected, 0 for white).
+   int processedCameraOutput[ 239 ];
+   //Array used to determine the position of offset of the line detected.
+   int offsetPosition[ 239 ];
+   //Array used to find error code.
+   int errorCodeArray[ 239 ];
+   //Variable usedto store the error code.
+
+   bool run = true;
+
+   while (run) {
+
+    int errorCode = 0;
    //Stores the current display on the camera.
    take_picture();
 
    //Processes the image and stores line detection in the processedCameraOutput array.
-   for (int column = 0; column < 320; column++) {
+   for (int column = 0; column < 239; column++) {
         //Reads the RGB values for the given pixel.
-        int red = get_pixel(120, column, 0);
-        int green = get_pixel(120, column, 1);
-        int blue = get_pixel(120, column, 2);
+        int red = get_pixel(column, 160, 0);
+        int green = get_pixel(column, 160, 1);
+        int blue = get_pixel(column, 160, 2);
 
         //Finds average colour from RGB values.
         int averageColour = (red+green+blue)/3;
-        printf("Average colour: %d\n", errorCode);
+        //printf("Average colour: %d\n", errorCode);
 
         //Stores eithe a 1 or 0 in the array at the position of the pixel.
-        if (averageColour >= 180) {
+        if (averageColour >= 127) {
             //Line detected.
             processedCameraOutput[column] = 1;
         } else {
@@ -72,23 +73,32 @@ int main () {
         }
    }
 
+   for (int i = 0; i < 239; i++) {
+        //printf("Num: %d\n", i);
+        printf("Array: %d\n", processedCameraOutput[i]);
+   }
+
    //Sets values from -160 to 159 in an array (includes 0).
-   int value = -160;
-   for (int i = 0; i < 320; i++) {
+   int value = -119;
+   for (int i = 0; i < 239; i++) {
         offsetPosition[i] = value;
         value++;
    }
 
    //Finds error code based on arrays.
-   for (int i = 0; i < 320; i++) {
+   for (int i = 0; i < 239; i++) {
         errorCodeArray[i] = processedCameraOutput[i] * offsetPosition[i];
    }
    //Adds all the values in the errorCode array.
-   for (int i = 0; i < 320; i++) {
+   for (int i = 0; i < 239; i++) {
         errorCode = errorCode + errorCodeArray[i];
-        printf("Final error code: %d\n", errorCode);
+        //printf("Final error code: %d\n", errorCode);
+
     }
-    
+
+    printf("Final error code: %d\n", errorCode);
+
     //Waits for 5 seconds.
     Sleep(5,0);
+}
 }
