@@ -30,11 +30,7 @@ extern "C" int receive_from_server(char message[24]);
 
 
 /*====================INITIAL SETUP====================*/
-//Initialise hardware.
-init(0);
 
-//Connect the camera to the screen.
-open_screen_stream();
 
 //Define arrays.
 int processed_camera_output[239];	//Used to store the processed camera output (1 for line detected, 0 for white).
@@ -46,18 +42,31 @@ double error_code;					//Used to store the final calculated error code.
 double proportional_signal;			//Used to determine the dispacement based on error code.
 double absolute_proportional_signal;			//Used to determine the dispacement based on error code.
 
-//Define tuning values.
+												//Define tuning values.
 double kP = 0.5;
 //float kI = 0.5;
 //float kD = 0.5;
 
 //Define booleans.
 bool run = true;					//Used to continuously loop a main method.
-/*=====================================================*/
+									/*=====================================================*/
+
+
+
+
+									//If big negative, too far right, need to turn left
+									//If big positive, too far left, need to turn right
+
+
 
 int main() {
 
-	/*======================MAIN LOOP======================*/
+	//Initialise hardware.
+	init(0);
+
+	//Connect the camera to the screen.
+	open_screen_stream();
+
 	while (run) {
 
 		//Sets the error code back to 0.
@@ -108,50 +117,38 @@ int main() {
 		//printf("Final error code: %d\n", error_code);
 
 		//Runs the method used to set the speeds for the left and right motors.
-		set_motor_speeds();
+		int left_motor_pin = 2;
+		int right_motor_pin = 1;
+
+		int left_motor_speed = 0;
+		int right_motor_speed = 0;
+
+		proportional_signal = error_code * kP;
+		//printf("Proportional signal: %d", proportional_signal);
+
+		//Converts to absolute:
+		if (proportional_signal < 0) {		//Too far right, need to turn left.
+			absolute_proportional_signal = absolute_proportional_signal * -1;
+		}
+
+		if (proportional_signal < 0) {		//Too far right, need to turn left.
+			left_motor_speed = (127 + (absolute_proportional_signal / 255) * 127);
+			right_motor_speed = (127 - (absolute_proportional_signal / 255) * 127);
+		}
+		else if (proportional_signal > 0) { //Too far left, need to turn right.
+			left_motor_speed = (127 - (absolute_proportional_signal / 255) * 127);
+			right_motor_speed = (127 + (absolute_proportional_signal / 255) * 127);
+		}
+		else {								//Too far right, need to turn left.
+			left_motor_speed = 127;
+			right_motor_speed = 127;
+		}
+
+		set_motor(left_motor_pin, left_motor_speed);
+		set_motor(right_motor_pin, right_motor_speed);
 
 		//Waits for 5 seconds.
 		Sleep(5, 0);
 	}
-	/*=====================================================*/
-}
-
-void set_motor_speeds() {
-
-	int left_motor_pin = 2;
-	int right_motor_pin = 1;
-
-	double left_motor_speed = 0;
-	double right_motor_speed = 0;
-
-	proportional_signal = error_code * kP;
-	//printf("Proportional signal: %d", proportional_signal);
-
-	//Converts to absolute:
-	get_absolute();
-
-	if (proportional_signal < 0) {		//Too far right, need to turn left.
-		left_motor_speed = (127 + (absolute_proportional_signal / 255) * 127);
-		right_motor_speed = (127 - (absolute_proportional_signal / 255) * 127);
-	}
-	else if (proportional_signal > 0) { //Too far left, need to turn right.
-		left_motor_speed = (127 - (absolute_proportional_signal / 255) * 127);
-		right_motor_speed = (127 + (absolute_proportional_signal / 255) * 127);
-	}
-	else {								//Too far right, need to turn left.
-		left_motor_speed = 127;
-		right_motor_speed = 127;
-	}
-
-	set_motor(left_motor_pin, left_motor_speed);
-	set_motor(right_motor_pin, right_motor_speed);
-
-	//If big negative, too far right, need to turn left
-	//If big positive, too far left, need to turn right
-}
-
-void get_absolute() {
-	if (proportional_signal < 0) {		//Too far right, need to turn left.
-		absolute_proportional_signal = absolute_proportional_signal * -1;
-	}
+	return 0;
 }
