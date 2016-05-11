@@ -28,35 +28,34 @@ extern "C" int connect_to_server(char server_addr[15], int port);
 extern "C" int send_to_server(char message[24]);
 extern "C" int receive_from_server(char message[24]);
 
+
+/*====================INITIAL SETUP====================*/
+//Initialise hardware.
+init(0);
+
+//Connect the camera to the screen.
+open_screen_stream();
+
+//Define arrays.
+int processed_camera_output[239];	//Used to store the processed camera output (1 for line detected, 0 for white).
+int offset_position[239];			//Used to determine the position of offset of the line detected.
+int error_code_array[239];			//Used to find error code.
+
+									//Define doubles.
+double error_code;					//Used to store the final calculated error code.
+double proportional_signal;			//Used to determine the dispacement based on error code.
+double absolute_proportional_signal;			//Used to determine the dispacement based on error code.
+
+//Define tuning values.
+double kP = 0.5;
+//float kI = 0.5;
+//float kD = 0.5;
+
+//Define booleans.
+bool run = true;					//Used to continuously loop a main method.
+/*=====================================================*/
+
 int main() {
-
-	/*====================INITIAL SETUP====================*/
-	//Initialise hardware.
-	init(0);
-
-	//Connect the camera to the screen.
-	open_screen_stream();
-
-	//Define arrays.
-	int processed_camera_output[239];	//Used to store the processed camera output (1 for line detected, 0 for white).
-	int offset_position[239];			//Used to determine the position of offset of the line detected.
-	int error_code_array[239];			//Used to find error code.
-
-	//Define doubles.
-	double error_code;					//Used to store the final calculated error code.
-	double proportional_signal;			//Used to determine the dispacement based on error code.
-
-	//Define tuning values.
-	float kP = 0.5;
-	float kI = 0.5;
-	float kD = 0.5;
-
-	//Define booleans.
-	bool run = true;					//Used to continuously loop a main method.
-	/*=====================================================*/
-
-
-
 
 	/*======================MAIN LOOP======================*/
 	while (run) {
@@ -87,10 +86,6 @@ int main() {
 			}
 		}
 
-		/*for (int i = 0; i < 239; i++) {
-			printf("Array: %d\n", processed_camera_output[i]);
-		}*/
-
 		//Sets values from -160 to 159 in an array (includes 0).
 		int value = -119;
 		for (int i = 0; i < 239; i++) {
@@ -110,7 +105,7 @@ int main() {
 		}
 
 		//Print the final error code.
-		printf("Final error code: %d\n", error_code);
+		//printf("Final error code: %d\n", error_code);
 
 		//Runs the method used to set the speeds for the left and right motors.
 		set_motor_speeds();
@@ -130,9 +125,10 @@ void set_motor_speeds() {
 	double right_motor_speed = 0;
 
 	proportional_signal = error_code * kP;
-	printf("Proportional signal: %d", proportional_signal);
+	//printf("Proportional signal: %d", proportional_signal);
 
-	absolute_proportional_signal = abs(proportional_signal);
+	//Converts to absolute:
+	get_absolute();
 
 	if (proportional_signal < 0) {		//Too far right, need to turn left.
 		left_motor_speed = (127 + (absolute_proportional_signal / 255) * 127);
@@ -152,4 +148,10 @@ void set_motor_speeds() {
 
 	//If big negative, too far right, need to turn left
 	//If big positive, too far left, need to turn right
+}
+
+void get_absolute() {
+	if (proportional_signal < 0) {		//Too far right, need to turn left.
+		absolute_proportional_signal = absolute_proportional_signal * -1;
+	}
 }
