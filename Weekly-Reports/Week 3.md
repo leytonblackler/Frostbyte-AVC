@@ -1,14 +1,14 @@
 ###Week 3 Checklist
-- [ ] Alex: (insert task here)
-- [ ] Raven: (insert task here)
-- [ ] Jess: (insert task here)
-- [ ] Leyton: (insert task here)
-- [ ] Waseem: (insert task here)
+- [X] Alex: (Build main chassis and get Motor and camera to work functionally.)
+- [X] Raven: (Develop code for robot to begin the course.)
+- [X] Jess: (Develop code for robot to begin the course.)
+- [X] Leyton: (Develop code for robot to begin the course.)
+- [X] Waseem: (Build main chassis and get Motor and camera to work functionally.)
 
 ####Week 3 Review
-* Everyone did all their assigned tasks this week. ??????
-* We have set goals for next week ([Week 4 Checklist](/Documents/Week 4.md)).
-* (insert review here)
+* Everyone did their assigned tasks relative to 'beginning the course'.
+* We have set goals for next week ([Week 4 Checklist](/Weekly-Reports/Week 4.md)).
+* The code for making the motors move and making the camera work, but the code for reading the line via the camera is still in developement
 * (insert review here)
 * (insert review here)
 
