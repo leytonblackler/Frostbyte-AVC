@@ -1,3 +1,4 @@
+/*=======================IMPORTS=======================*/
 #include <stdio.h>
 #include <time.h>
 
@@ -11,7 +12,6 @@ extern "C" void set_pixel(int col, int row, char red, char green, char blue);
 extern "C" int open_screen_stream();
 extern "C" int close_screen_stream();
 extern "C" int update_screen();
-//extern "C" void GetLine(int row,int threshold);
 extern "C" int display_picture(int delay_sec, int delay_usec);
 extern "C" int save_picture(char filename[5]);
 
@@ -27,244 +27,132 @@ extern "C" int set_PWM(int chan, int value);
 extern "C" int connect_to_server(char server_addr[15], int port);
 extern "C" int send_to_server(char message[24]);
 extern "C" int receive_from_server(char message[24]);
+/*=====================================================*/
 
 
-/*====================INITIAL SETUP====================*/
-
-
-//Define arrays.
-int processed_camera_output[239];       //Used to store the processed camera output (1 for line detected, 0 for white).
+/*==================VARIABLE DEFINTIONS================*/
+//Define array variables.
+int processed_camera_output[239];				//Used to store the processed camera output (1 for line detected, 0 for white).
 int offset_position[239];                       //Used to determine the position of offset of the line detected.
 int error_code_array[239];                      //Used to find error code.
 
-                                                                        //Define doubles.
-double error_code;                                      //Used to store the final calculated error code.
+//Define numerical variables.
+double error_code;                              //Used to store the final calculated error code.
+int maximum_error_code = 7140;					//Constant value used to find the motor speed ratio.
 double proportional_signal;                     //Used to determine the dispacement based on error code.
-double absolute_proportional_signal;                    //Used to determine the dispacement based on error code.
-int Mec=7140;
-                                                                                                //Define tuning values.
-double kP =0.5;
-extern "C" int set_PWM(int chan, int value);
-
-extern "C" int connect_to_server(char server_addr[15], int port);
-extern "C" int send_to_server(char message[24]);
-extern "C" int receive_from_server(char message[24]);
+double absolute_proportional_signal;            //Used to store the abolsute value of the proportional_signal.
+int left_motor_pin = 2;							//Pin assigned to left motor.
+int right_motor_pin = 1;						//Pin assigned to right motor.
+int left_motor_speed = 0;						//Used to store the calcualted speed for the left motor.
+int right_motor_speed = 0;						//Used to store the calcualted speed for the right motor.
 
 
-/*====================INITIAL SETUP====================*/
-
-
-//Define arrays.
-int processed_camera_output[239];       //Used to store the processed camera output (1 for line detected, 0 for white).
-int offset_position[239];                       //Used to determine the position of offset of the line detected.
-int error_code_array[239];                      //Used to find error code.
-
-                                                                        //Define doubles.
-double error_code;                                      //Used to store the final calculated error code.
-double proportional_signal;                     //Used to determine the dispacement based on error code.
-double absolute_proportional_signal;                    //Used to determine the dispacement based on error code.
-int Mec=7140;
-                                                                                                //Define tuning values.
-double kP =0.5;
-//float kI = 0.5;
-//float kD = 0.5;
+//Define tuning values.
+double kP = 1;									//Constant used to tune the proportional signal.
+//float kI = 1;									//Constant used to tune the integral signal.
+//float kD = 1;									//Constant used to tune the derivative signal.
 
 //Define booleans.
-bool run = true;                                        //Used to continuously loop a main method.
-                                                                        /*=====================================================*/
+bool run = true;								//Used to continuously loop a main method.
+/*=====================================================*/
 
 
-
-
-                                                                        //If big negative, too far right, need to turn left
-                                                                        //If big positive, too far left, need to turn right
-
-
-
+/*======================MAIN CODE======================*/
 int main() {
 
-        //Initialise hardware.
-        init(0);
+	//Initialise hardware.
+	init(0);
 
-        //Connect the camera to the screen.
-        open_screen_stream();
+	//Connect the camera to the screen.
+	open_screen_stream();
 
-        while (run) {
+	//Main program loop, will constantly repeat.
+	while (run) {
 
-//Define booleans.
-bool run = true;                                        //Used to continuously loop a main method.
-                                                                        /*=====================================================*/
+		//Sets the error code back to 0.
+		error_code = 0;
 
+		//Stores the current display on the camera.
+		take_picture();
 
+		//Processes the image and stores line detection in the processed_camera_output array.
+		for (int column = 0; column < 239; column++) {
 
+			//Reads the RGB values for the pixel in the given column.
+			int red = get_pixel(column, 160, 0);
+			int green = get_pixel(column, 160, 1);
+			int blue = get_pixel(column, 160, 2);
 
-                                                                        //If big negative, too far right, need to turn left
-                                                                        //If big positive, too far left, need to turn right
+			//Finds average colour from RGB values.
+			int average_colour = (red + green + blue) / 3;
 
+			//Stores either a 1 or 0 in the array at the position of the pixel.
+			if (average_colour >= 127) { //Line detected.
 
+				//Set the pixel index value to 1 to indicate light colour detected.
+				processed_camera_output[column] = 1;
+			}
 
-int main() {
+			else { //No line detected.
 
-        //Initialise hardware.
-        init(0);
+				//Set the pixel index value to 0 to indicate dark colour detected.
+				processed_camera_output[column] = 0;
+			}
 
-        //Connect the camera to the screen.
-        open_screen_stream();
+			//Sets values from -160 to 159 in an array (includes 0).
+			int value = -119;
+			for (int i = 0; i < 239; i++) {
+				offset_position[i] = value;
+				value++;
+			}
 
-        while (run) {
+			//Finds error code array based on offset position and processed camera output..
+			for (int i = 0; i < 239; i++) {
+				error_code_array[i] = processed_camera_output[i] * offset_position[i];
+			}
 
-                //Sets the error code back to 0.
-                error_code = 0;
-                //Stores the current display on the camera.
-                take_picture();
+			//Adds all the values in the error code array.
+			for (int i = 0; i < 239; i++) {
+				error_code = error_code + error_code_array[i];
+			}
 
-                //Processes the image and stores line detection in the processed_camera_output array.
-                for (int column = 0; column < 239; column++) {
-                        //Reads the RGB values for the given pixel.
-                        int red = get_pixel(column, 160, 0);
-                        int green = get_pixel(column, 160, 1);
-                        int blue = get_pixel(column, 160, 2);
+			//Calculate the proportional signal from the error code and the tuning value of kP.
+			proportional_signal = error_code * kP;
 
-                        //Finds average colour from RGB values.
-                        int average_colour = (red + green + blue) / 3;
+			//Convert the proportional signal to an absolute value.
+			if (proportional_signal < 0) {
+				absolute_proportional_signal = absolute_proportional_signal * -1;
+			}
 
-                        //Stores either a 1 or 0 in the array at the position of the pixel.
-                        if (average_colour >= 127) {
-                                //Line detected.
-                                processed_camera_output[column] = 1;
-                        }
-                        else {
-                                //No line detected.
-                                processed_camera_output[column] = 0;
-   error_code = 0;
-                //Stores the current display on the camera.
-                take_picture();
+			//Proportionally changes motor speed values depending on proportional_signal. 
+			if (proportional_signal < 0) { //Too far right, need to turn left.
 
-                //Processes the image and stores line detection in the processed_camera_output array.
-                for (int column = 0; column < 239; column++) {
-                        //Reads the RGB values for the given pixel.
-                        int red = get_pixel(column, 160, 0);
-                        int green = get_pixel(column, 160, 1);
-                        int blue = get_pixel(column, 160, 2);
+				//Left motor is set to a proportional faster speed than the right motor.
+				left_motor_speed = (80 + ((175 / maximum_error_code)*absolute_proportional_signal));
+				right_motor_speed = (80);
 
-                        //Finds average colour from RGB values.
-                        int average_colour = (red + green + blue) / 3;
+			}
+			else if (proportional_signal > 0) { //Too far left, need to turn right.
 
-                        //Stores either a 1 or 0 in the array at the position of the pixel.
-                        if (average_colour >= 127) {
-                                //Line detected.
-                                processed_camera_output[column] = 1;
-                        }
-                        else {
-                                //No line detected.
-                                processed_camera_output[column] = 0;
-                        }
-                }
+			 //Right motor is set to a proportional faster speed than the left motor.
+				left_motor_speed = (80);
+				right_motor_speed = (80 + ((175 / maximum_error_code)*absolute_proportional_signal));
 
-                //Sets values from -160 to 159 in an array (includes 0).
-                int value = -119;
-                for (int i = 0; i < 239; i++) {
-                        offset_position[i] = value;
-                        value++;
-                }
+			}
+			else { //Centred, no need to turn.
 
-                //Finds error code based on arrays.
-                for (int i = 0; i < 239; i++) {
-                        error_code_array[i] = processed_camera_output[i] * offset_position[i];
-                }
+			 //Both motors are set to equal speeds.
+				left_motor_speed = 80;
+				right_motor_speed = 80;
+			}
 
-                //Adds all the values in the error_code array.
-                for (int i = 0; i < 239; i++) {
-                        error_code = error_code + error_code_array[i];
-                        //printf("Final error code: %d\n", error_code);
-                }
-// 50+(205/max value times errorcode)*kp
-//int prop = 255/error_code;
-//if(error_code>0){set_motor(2,30+prop);
-//                set_motor(1, 30);}
+			//Sets the motors to the calculated speeds.
+			set_motor(left_motor_pin, left_motor_speed);
+			set_motor(right_motor_pin, right_motor_speed);
 
-                //Sets values from -160 to 159 in an array (includes 0).
-                int value = -119;
-                for (int i = 0; i < 239; i++) {
-                        offset_position[i] = value;
-                        value++;
-                }
-
-                //Finds error code based on arrays.
-                for (int i = 0; i < 239; i++) {
-                        error_code_array[i] = processed_camera_output[i] * offset_position[i];
-                }
-
-                //Adds all the values in the error_code array.
-                for (int i = 0; i < 239; i++) {
-                        error_code = error_code + error_code_array[i];
-                        //printf("Final error code: %d\n", error_code);
-                }
-// 50+(205/max value times errorcode)*kp
-//int prop = 255/error_code;
-//if(error_code>0){set_motor(2,30+prop);
-//                set_motor(1, 30);}
-//if(error_code<0){set_motor(2,30);
-//               set_motor(1,30+prop);}
-                //Print the final error code.
-                //printf("Final error code: %d\n", error_code);
-
-                //Runs the method used to set the speeds for the left and right motors.
-                int left_motor_pin = 2;
-                int right_motor_pin = 1;
-
-                int left_motor_speed = 0;
-                int right_motor_speed = 0;
-
-                proportional_signal = error_code * kP;
-                //printf("Proportional signal: %d", proportional_signal);
-
-                //Converts to absolute:
-                if (proportional_signal < 0) {          //Too far right, need to turn left.
-                        absolute_proportional_signal = absolute_proportional_signal * -1;
-                }
-int asdf= error_code;
-                 printf("%d\n",asdf);
-                if (proportional_signal < 0) {          //Too far right, need to turn left.
-                        left_motor_speed = (80 +((175/Mec)*absolute_proportional_signal) );
-                        right_motor_speed = (80  );
-      //Print the final error code.
-                //printf("Final error code: %d\n", error_code);
-
-                //Runs the method used to set the speeds for the left and right motors.
-                int left_motor_pin = 2;
-                int right_motor_pin = 1;
-
-                int left_motor_speed = 0;
-                int right_motor_speed = 0;
-
-                proportional_signal = error_code * kP;
-                //printf("Proportional signal: %d", proportional_signal);
-
-                //Converts to absolute:
-                if (proportional_signal < 0) {          //Too far right, need to turn left.
-                        absolute_proportional_signal = absolute_proportional_signal * -1;
-                }
-int asdf= error_code;
-                 printf("%d\n",asdf);
-                if (proportional_signal < 0) {          //Too far right, need to turn left.
-                        left_motor_speed = (80 +((175/Mec)*absolute_proportional_signal) );
-                        right_motor_speed = (80  );
-                }
-                else if (proportional_signal > 0) { //Too far left, need to turn right.
-                        left_motor_speed = (80 );
-                        right_motor_speed = (80 + ((175/Mec)*absolute_proportional_signal ));
-                }
-                else {                                                          //Too far right, need to turn left.
-                        left_motor_speed = 80;
-                        right_motor_speed = 80;
-                }
-
-                set_motor(left_motor_pin, left_motor_speed);
-                set_motor(right_motor_pin, right_motor_speed);
-
-                //Waits for 0.5 seconds.
-                Sleep(0,500);
-        }
-        return 0;
+			//Waits for 0.5 seconds.
+			Sleep(0, 500);
+		}
+		return 0;
+	}
 }
