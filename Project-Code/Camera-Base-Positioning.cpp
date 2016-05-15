@@ -40,7 +40,7 @@ int error_code_array[239];              //Used to find error code.
 double error_code;                      //Used to store the final calculated error code.
 int maximum_error_code = 7140;			//Constant value used to find the motor speed ratio.
 double proportional_signal;             //Used to determine the dispacement based on error code.
-double absolute_proportional_signal;    //Used to store the abolsute value of the proportional_signal.
+
 int left_motor_pin = 2;					//Pin assigned to left motor.
 int right_motor_pin = 1;				//Pin assigned to right motor.
 int left_motor_speed = 0;				//Used to store the calcualted speed for the left motor.
