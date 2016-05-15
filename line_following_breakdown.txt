@@ -3,5 +3,83 @@ Proportional integral differential controllers are used to minimise overshoot wh
 faster and ultimately make the robot follow the line accurately. The vehicle curently has proportional (kp) implemented.
 Only kp is currently implemented it is easyier to understand which is imperitive when working in a group. especially when 
 everybody is new to the concept of PID controllers. 
+the following repeats each frame...
+
+Set the placeholder for an array with 239 values to hold 239 values for our processed  camera output, as our camera has 240 pixels and we need even number of pixels each side
+
+set the placeholder for an array with 239 values that will be used to determine offset position
+
+set the placeholder for an array with 239 values that will be usd to calculate final error code.
+
+set placeholder that will store the calculated error value.
+
+set a value of 7140 (our max error code) for use when calculating motor speed proportion
+
+set place holder for the proportional signal
+
+set motor 2 to the name Left_motor_pin
+set motor 1 to the name right_motor_pin
+
+set both motor speeds to zero
+
+define tuning value for kp as 0.5, this is just a test value at this point
+
+define the methods for set motor speed and process picture
+
+create main method
+
+initialise the hardware
+
+open screen stream
+
+start the run loop to start the vehicle
+
+sets error code back to zero at the start of each loop
+calls take picture method which will take current image from the camera.
+
+calls process picture method which will..
+{
+start a loop that will run 239 times 
+this loop reads rgb value for a column
+ 
+
+each time setting a value for integers red green and blue
+take averaget colour by adding all three colours and deviding by 3
+
+if the average color is greater than 127 the pixel will represent the white line
+so set the array for processed camera output for that column number to 1
+or else it will be black so set it to zero
+it then increments column
+repeats 239 times to get every pixel in a row, then exit
+}
+
+Set values from -160 to 159 in an array for offset position (includes 0).
+
+error code array is then created using the  processed camera aray and the offfset position array
+
+the error code is then calculated by adding all values in the error code array together
+
+proportianl signal is calculated by multiplying error code by kp
+
+calculate motor speed method is called which will...
+{
+if the proportional signal is negative the vehicle needs to turn right
+so set left motor speed to base speed plus a proportional adjustment calculated by 175 / maximum_error_code*kp)*(proportional_signal*-1
+and right motor to 80
+ or if its positive
+set right motor speed to base speed plus a proportional adjustment calculated by 175 / maximum_error_code*kp)*(proportional_signal)
+and left motor to 80
+
+or else set both motors to 80
+}
+
+repeat forever
+
+
+
+
+
+
+
 
 //yet to add psuedocode
