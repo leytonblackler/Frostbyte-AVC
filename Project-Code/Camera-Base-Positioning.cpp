@@ -48,7 +48,7 @@ int right_motor_speed = 0;				//Used to store the calcualted speed for the right
 
 
 //Define tuning values.
-double kP = 1;							//Constant used to tune the proportional signal.
+double kP = 0.5;							//Constant used to tune the proportional signal.
 //float kI = 1;							//Constant used to tune the integral signal.
 //float kD = 1;							//Constant used to tune the derivative signal.
 
@@ -150,7 +150,7 @@ void calculate_motor_speeds() {
 	if (proportional_signal < 0) { //--Too far right, need to turn left.
 
 		//Left motor is set to a proportional faster speed than the right motor.
-		left_motor_speed = (80 + ((175 / maximum_error_code)*(proportional_signal*-1)));
+		left_motor_speed = (80 + ((175 / maximum_error_code*kp)*(proportional_signal*-1)));
 		right_motor_speed = (80);
 	}
 
@@ -158,7 +158,7 @@ void calculate_motor_speeds() {
 
 		//Right motor is set to a proportional faster speed than the left motor.
 		left_motor_speed = (80);
-		right_motor_speed = (80 + ((175 / maximum_error_code)*proportional_signal));
+		right_motor_speed = (80 + ((175 / maximum_error_code*kp)*proportional_signal));
 	}
 
 	else { //--Centred, no need to turn.
