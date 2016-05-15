@@ -1,0 +1,7 @@
+Currently our vehicle is reading the line giving us an accurate error code and responding to the line proportionally.
+Proportional integral differential controllers are used to minimise overshoot when correcting error, steady the vehicle 
+faster and ultimately make the robot follow the line accurately. The vehicle curently has proportional (kp) implemented.
+Only kp is currently implemented it is easyier to understand which is imperitive when working in a group. especially when 
+everybody is new to the concept of PID controllers. 
+
+//yet to add psuedocode
