@@ -102,11 +102,6 @@ int main() {
 		//Calculate the proportional signal from the error code and the tuning value of kP.
 		proportional_signal = error_code * kP;
 
-		//Convert the proportional signal to an absolute value.
-		if (proportional_signal < 0) {
-			absolute_proportional_signal = absolute_proportional_signal * -1;
-		}
-
 		calculate_motor_speeds();
 
 		//Sets the motors to the calculated speeds.
@@ -120,7 +115,7 @@ int main() {
 }
 
 
-
+//Sets the values in the processed_camera_output array to either 1 or 0 depending on the colour detected.
 void process_picture() {
 
 	for (int column = 0; column < 239; column++) {
@@ -149,24 +144,21 @@ void process_picture() {
 }
 
 
-
+//Proportionally changes motor speed values depending on proportional_signal. 
 void calculate_motor_speeds() {
-
-	//Proportionally changes motor speed values depending on proportional_signal. 
+	
 	if (proportional_signal < 0) { //--Too far right, need to turn left.
 
 		//Left motor is set to a proportional faster speed than the right motor.
-		left_motor_speed = (80 + ((175 / maximum_error_code)*absolute_proportional_signal));
+		left_motor_speed = (80 + ((175 / maximum_error_code)*(proportional_signal*-1)));
 		right_motor_speed = (80);
-
 	}
 
 	else if (proportional_signal > 0) { //--Too far left, need to turn right.
 
 		//Right motor is set to a proportional faster speed than the left motor.
 		left_motor_speed = (80);
-		right_motor_speed = (80 + ((175 / maximum_error_code)*absolute_proportional_signal));
-
+		right_motor_speed = (80 + ((175 / maximum_error_code)*proportional_signal));
 	}
 
 	else { //--Centred, no need to turn.
