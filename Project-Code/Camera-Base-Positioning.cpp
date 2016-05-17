@@ -48,7 +48,7 @@ int right_motor_speed = 0;				//Used to store the calcualted speed for the right
 
 
 //Define tuning values.
-double kP = 0.5;							//Constant used to tune the proportional signal.
+float kP = 0.005;							//Constant used to tune the proportional signal.
 //float kI = 1;							//Constant used to tune the integral signal.
 //float kD = 1;							//Constant used to tune the derivative signal.
 
@@ -56,7 +56,7 @@ double kP = 0.5;							//Constant used to tune the proportional signal.
 bool run = true;						//Used to continuously loop a main method.
 
 //Define methods;
-void set_motor_speeds();
+void calculate_motor_speeds();
 void process_picture();
 /*=====================================================*/
 
@@ -101,11 +101,12 @@ int main() {
 
 		//Calculate the proportional signal from the error code and the tuning value of kP.
 		proportional_signal = error_code * kP;
-
+		
 		calculate_motor_speeds();
-
+                printf("%d\n", left_motor_speed);
+		printf("%d\n",right_motor_speed);
 		//Sets the motors to the calculated speeds.
-		set_motor(left_motor_pin, left_motor_speed);
+	set_motor(left_motor_pin, left_motor_speed);
 		set_motor(right_motor_pin, right_motor_speed);
 
 		//Waits for 0.5 seconds.
@@ -147,24 +148,24 @@ void process_picture() {
 //Proportionally changes motor speed values depending on proportional_signal. 
 void calculate_motor_speeds() {
 	
-	if (proportional_signal < 0) { //--Too far right, need to turn left.
+	if (proportional_signal  < 0) { //--Too far right, need to turn left.
 
 		//Left motor is set to a proportional faster speed than the right motor.
-		left_motor_speed = (80 + ((175 / maximum_error_code*kp)*(proportional_signal*-1)));
-		right_motor_speed = (80);
+	right_motor_speed =(50-(proportional_signal/(119))*175); //(80+((175 / maximum_error_code*kP)*(proportional_signal*-1)));
+		left_motor_speed = (50+(proportional_signal/(119))*175);
 	}
 
 	else if (proportional_signal > 0) { //--Too far left, need to turn right.
 
 		//Right motor is set to a proportional faster speed than the left motor.
-		left_motor_speed = (80);
-		right_motor_speed = (80 + ((175 / maximum_error_code*kp)*proportional_signal));
+		right_motor_speed = (50-(proportional_signal/(119))*175);
+		left_motor_speed = (50+(proportional_signal/(119))*175); //((175 / maximum_error_code*kP)*proportional_signal));
 	}
 
 	else { //--Centred, no need to turn.
 
 		//Both motors are set to equal speeds.
-		left_motor_speed = 80;
-		right_motor_speed = 80;
+		left_motor_speed =- 80;
+		right_motor_speed =- 80;
 	}
 }
