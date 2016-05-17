@@ -58,17 +58,25 @@ bool run = true;						//Used to continuously loop a main method.
 //Define methods;
 void calculate_motor_speeds();
 void process_picture();
+void open_gate();
 /*=====================================================*/
-
 
 
 int main() {
 
 	//Initialise hardware.
 	init(0);
+	init(1);
+
+	//Opens the network gate.
+	open_gate();
+	printf("Opening gate...");
 
 	//Connect the camera to the screen.
 	open_screen_stream();
+
+	//Waits for 5 seconds.
+	Sleep(0, 10000);
 
 	//Main program loop, will constantly repeat.
 	while (run) {
@@ -101,12 +109,15 @@ int main() {
 
 		//Calculate the proportional signal from the error code and the tuning value of kP.
 		proportional_signal = error_code * kP;
-		
+
 		calculate_motor_speeds();
-                printf("%d\n", left_motor_speed);
-		printf("%d\n",right_motor_speed);
+
+		//Print the values for the motor speeds.
+		printf("%d\n", left_motor_speed);
+		printf("%d\n", right_motor_speed);
+
 		//Sets the motors to the calculated speeds.
-	set_motor(left_motor_pin, left_motor_speed);
+		set_motor(left_motor_pin, left_motor_speed);
 		set_motor(right_motor_pin, right_motor_speed);
 
 		//Waits for 0.5 seconds.
@@ -147,25 +158,43 @@ void process_picture() {
 
 //Proportionally changes motor speed values depending on proportional_signal. 
 void calculate_motor_speeds() {
-	
-	if (proportional_signal  < 0) { //--Too far right, need to turn left.
+
+	if (proportional_signal < 0) { //--Too far right, need to turn left.
 
 		//Left motor is set to a proportional faster speed than the right motor.
-	right_motor_speed =(50-(proportional_signal/(119))*175); //(80+((175 / maximum_error_code*kP)*(proportional_signal*-1)));
-		left_motor_speed = (50+(proportional_signal/(119))*175);
+		right_motor_speed = (50 - (proportional_signal / (119)) * 175); //(80+((175 / maximum_error_code*kP)*(proportional_signal*-1)));
+		left_motor_speed = (50 + (proportional_signal / (119)) * 175);
 	}
 
 	else if (proportional_signal > 0) { //--Too far left, need to turn right.
 
 		//Right motor is set to a proportional faster speed than the left motor.
-		right_motor_speed = (50-(proportional_signal/(119))*175);
-		left_motor_speed = (50+(proportional_signal/(119))*175); //((175 / maximum_error_code*kP)*proportional_signal));
+		right_motor_speed = (50 - (proportional_signal / (119)) * 175);
+		left_motor_speed = (50 + (proportional_signal / (119)) * 175); //((175 / maximum_error_code*kP)*proportional_signal));
 	}
 
 	else { //--Centred, no need to turn.
 
 		//Both motors are set to equal speeds.
-		left_motor_speed =- 80;
-		right_motor_speed =- 80;
+		left_motor_speed = -80;
+		right_motor_speed = -80;
 	}
+}
+
+//Opens the network gate.
+void open_gate() {
+
+	//init(1);
+
+	//Connects to gate server with the IP address 192.168.1.2
+	connect_to_server("130.195.6.196", 1024);
+
+	//Sends a message to the connected server.
+	send_to_server("Please");
+
+	//Receives message from the connected server.
+	char message[24];
+	receive_from_server(message);
+	send_to_server(message);
+	printf("%s", message);
 }
