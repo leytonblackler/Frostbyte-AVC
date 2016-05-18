@@ -1,4 +1,5 @@
 ###Week 5 Checklist
+- [X] All: Finish code so RPi is able to navigate its way through quadrants 1 - 3.
 - [ ] Alex: (insert task here)
 - [ ] Raven: (insert task here)
 - [ ] Jess: (insert task here)
@@ -6,9 +7,9 @@
 - [ ] Waseem: (insert task here)
 
 ####Week 5 Review
-* Everyone did all their assigned tasks this week. ??????
-* We have set goals for next week ([Week 5 Checklist](/Documents/Week 5.md)).
-* (insert review here)
+* Everyone is up to date with their assigned tasks for Week 5.
+* We have set goals for next week ([Week 5 Checklist](/Weekly-Reports/Week 5.md)).
+*During our lab this week we got our RPi through the first 3 quadrants and ended up at the entrance of quadrant 4's maze.
 * (insert review here)
 * (insert review here)
 
