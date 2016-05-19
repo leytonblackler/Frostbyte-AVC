@@ -6,12 +6,15 @@
 - [ ] Leyton: (insert task here)
 - [ ] Waseem: (insert task here)
 
-####Week 5 Review
+###Week 5 Review
 * Everyone is up to date with their assigned tasks for Week 5.
 * We have set goals for next week ([Week 5 Checklist](/Weekly-Reports/Week 5.md)).
 *During our lab this week we got our RPi through the first 3 quadrants and ended up at the entrance of quadrant 4's maze.
 * (insert review here)
 * (insert review here)
+
+###Photos and Videos of Progress
+[![Week 5 Progress Video](http://i.imgur.com/kFwNwa6.png)](https://youtu.be/XmNyoZ0ESe4)
 
 ###Weekly Progress Checklist
 - [ ] How has each team member performed against their goal set last week?
