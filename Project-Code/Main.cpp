@@ -240,7 +240,27 @@ if(wall=0){
 		right_motor_speed = -20;
 	}
 }else if (wall=1){
+//front high and left high
+if(ir_left>150 && ir_front>150){
 
+}
+//front high left low
+else if(ir_front>150 && ir_left<150){
+
+}
+//left high front low
+else if(ir_left>300 && front<150){
+//Left motor is set to a proportional faster speed than the right motor.
+			right_motor_speed = (50 - (ir_proportional / (119)) * 175); //(80+((175 / maximum_error_code*kP)*(proportional_signal*-1)));
+			left_motor_speed = (50 + (ir_proportional / (119)) * 175);
+}
+//left low front low
+else if(ir_left<300 && ir_front<150){
+//Right motor is set to a proportional faster speed than the left motor.
+			right_motor_speed = (50 - (ir_proportional / (119)) * 175);
+			left_motor_speed = (50 + (ir_proportional / (119)) * 175); //((175 / maximum_error_code*kP)*proportional_signal));
+		
+}
 
 }
 }
