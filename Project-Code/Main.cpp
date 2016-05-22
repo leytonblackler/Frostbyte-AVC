@@ -60,6 +60,16 @@ bool run = true;							//Used to continuously loop a main method.
 void calculate_motor_speeds();
 void process_picture();
 void open_gate();
+void ir_read();
+
+//variables for ir sensors
+int wall_dist= 300; //distance from wall by ir value that we want the bot to stay
+int ir_error=0;
+double ir_proportional=0;
+double kpir= 0.5;
+int ir_left=0;
+int ir_front=0;
+int wall=0;
 /*=====================================================*/
 
 
@@ -88,7 +98,9 @@ int main() {
 
 		//Processes the image and stores line detection in the processed camera output arrays.
 		process_picture();
-
+                
+		//reads the ir sensors
+		ir_read();
 		//Checks if there is a line in front or to the left based on processed camera outputs.
 		front = 0;
 		left = 0;
@@ -198,6 +210,7 @@ void process_picture() {
 * Proportionally changes motor speed values depending on proportional_signal.
 */
 void calculate_motor_speeds() {
+if(wall=0){
 	if (front > 50 && left < 50) { //--Line in front and no line to the left.
 
 		if (proportional_signal < 0) { //--Too far right, need to turn left.
@@ -226,6 +239,24 @@ void calculate_motor_speeds() {
 		left_motor_speed = 80;
 		right_motor_speed = -20;
 	}
+}else if (wall=1){
+
+
+}
+}
+/*reads the ir sensors and makes calculations for the error
+code and proportional signal
+*/
+void ir_read(){
+	ir_left=read_analog(6);
+	ir_front= read_analog(7);
+	ir_error= ir_left-wall_dist;
+// this will give us a error >0 if the robot is too close to the wall, and 
+//and an error<0 if the bot is too far from the wall
+
+       ir_proportional= ir_error*kpir;
+//our proportional signal
+      
 }
 
 /*
