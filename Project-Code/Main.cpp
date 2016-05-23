@@ -242,11 +242,13 @@ if(wall=0){
 }else if (wall=1){
 //front high and left high
 if(ir_left>150 && ir_front>150){
-
+    right_motor_speed=-50;
+    left_motor_speed=50;
 }
 //front high left low
 else if(ir_front>150 && ir_left<150){
-
+    right_motor_speed= 50;
+    left_motor_speed= -50;
 }
 //left high front low
 else if(ir_left>300 && front<150){
