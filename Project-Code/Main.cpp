@@ -66,7 +66,7 @@ void ir_read();
 int wall_dist= 300; //distance from wall by ir value that we want the bot to stay
 int ir_error=0;
 double ir_proportional=0;
-double kpir= 0.5;
+double kpir= 0.05;
 int ir_left=0;
 int ir_front=0;
 int wall=0;
