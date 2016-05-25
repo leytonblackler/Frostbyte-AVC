@@ -51,8 +51,11 @@ int front = 0;								//Used to store the processed camera output sum for the to
 //Define tuning values.
 float kP = 0.004;							//Constant used to tune the proportional signal.
 //float kI = 1;								//Constant used to tune the integral signal.
-//float kD = 1;								//Constant used to tune the derivative signal.
-
+float kD = 5.0;								//Constant used to tune the derivative signal.
+//variables for kD
+int current_error=0;
+int previous_error=0;
+int derivative_signal=0;
 //Define booleans.
 bool run = true;							//Used to continuously loop a main method.
 
@@ -129,7 +132,11 @@ int main() {
 		for (int i = 0; i < 239; i++) {
 			error_code = error_code + error_code_array[i];
 		}
-
+		//derivative signal
+		current_error=current_error+error_code;
+		Sleep(0,1000);
+		derivative_signal=((current_error-previous_error)/0.1)*kD;
+		previous_error=current_error;
 		//Calculate the proportional signal from the error code and the tuning value of kP.
 		proportional_signal = error_code * kP;
 
@@ -140,9 +147,14 @@ int main() {
 		printf("%d\n", ir_front);
 
 		//Sets the motors to the calculated speeds.
-		set_motor(left_motor_pin, left_motor_speed);
+		if(wall<35){
+		set_motor(left_motor_pin, left_motor_speed+derivative_signal);
+		set_motor(right_motor_pin, right_motor_speed-derivative_signal);
+		}else{
+			set_motor(left_motor_pin, left_motor_speed);
 		set_motor(right_motor_pin, right_motor_speed);
-
+			
+		}
 		//Waits for 0.5 seconds.
 		Sleep(0, 500);
 	}
@@ -216,9 +228,9 @@ if(wall<35){
 		if (proportional_signal < 0) { //--Too far right, need to turn left.
 
 			//Left motor is set to a proportional faster speed than the right motor.
-			right_motor_speed = (70 - (proportional_signal / (119)) * 175); //(80+((175 / maximum_error_code*kP)*(proportional_signal*-1)));
-			left_motor_speed = (70 + (proportional_signal / (119)) * 175);
-		}
+		right_motor_speed = (70 - (proportional_signal / (119)) * 175); //(80+((175 / maximum_error_code*kP)*(proportional_signal*-1)));
+			left_motor_speed = (70 + ((proportional_signal / (119)) * 175));
+			}
 
 		else if (proportional_signal > 0) { //--Too far left, need to turn right.
 
