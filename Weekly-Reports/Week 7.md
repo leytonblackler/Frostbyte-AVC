@@ -5,12 +5,15 @@
 - [ ] Leyton: (insert task here)
 - [ ] Waseem: (insert task here)
 
-####Week 7 Review
+###Week 7 Review
 * Everyone did all their assigned tasks this week. ??????
 * We have set goals for next week ([Week 8 Checklist](/Documents/Week 8.md)).
 * (insert review here)
 * (insert review here)
 * (insert review here)
+
+###Photos and Videos of Progress
+[![Week 5 Progress Video](http://i.imgur.com/kFwNwa6.png)](https://youtu.be/rda9WztkAbE)
 
 ###Weekly Progress Checklist
 - [ ] How has each team member performed against their goal set last week?
