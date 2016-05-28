@@ -16,7 +16,7 @@ int main (){
    send_to_server("Please");
    //receives message from the connected server
    char message[24];
-   receive_from_server(message); //this may be buggy!
+   receive_from_server(message);
    send_to_server(message);
    printf("%s", message);
 
